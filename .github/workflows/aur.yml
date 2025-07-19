@@ -24,7 +24,7 @@ jobs:
 
       - name: debug ssh
         run: |
-          ssh -T aur@aur.archlinux.org -v -i ~/.ssh/aur
+          ssh -T aur@aur.archlinux.org -v -i ~/.ssh/aur list-repos
 
       - name: Clone AUR repo
         run: git clone ssh://aur@aur.archlinux.org/codeql.git codeql
