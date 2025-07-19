@@ -11,11 +11,8 @@ docker-build:
 		pacman -U --noconfirm /build/codeql-*.pkg.tar.zst && \
 		codeql version"
 
-
 fix-folder-permissions-from-docker:
-	id
 	sudo chown runner:runner -R /home/runner/work/aur-codeql-builder/aur-codeql-builder/codeql/
-	ls -alh /home/runner/work/aur-codeql-builder/aur-codeql-builder/codeql/
 
 commit:
 	cd codeql && \

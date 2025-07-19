@@ -41,17 +41,15 @@ jobs:
         run: make fix-folder-permissions-from-docker
 
       - name: Show diff if debug mode
-        if: ${{ github.event.inputs.debug }}
         run: |
           cd codeql
           git add PKGBUILD .SRCINFO
           git diff --cached
 
       - name: Early exit if debug mode
-        if: ${{ github.event.inputs.debug }}
+        if: ${{ !github.event.inputs.debug }}
         run: |
           echo "Debug mode set ('${{ github.event.inputs.debug }}'), skipping commit/push"
-          exit 0
 
       - name: Commit and push changes if any
         run: make commit
