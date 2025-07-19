@@ -8,9 +8,13 @@ docker-build:
 		usermod -s /bin/bash nobody && \
 		chage -E -1 nobody && \
 		su nobody -s /bin/bash -c 'cd /build && makepkg --printsrcinfo > .SRCINFO && makepkg -s --noconfirm' && \
-		pacman -U --noconfirm /build/codeql-*.pkg.tar.zst"
+		pacman -U --noconfirm /build/codeql-*.pkg.tar.zst && \
+		codeql version"
 
 commit:
+	ls -lah /home/runner/work/aur-codeql-builder/aur-codeql-builder/codeql/
+
+foo:
 	cd codeql && \
 	git add PKGBUILD .SRCINFO && \
 	if [ -n \"$(git status --porcelain)\" ]; then \
