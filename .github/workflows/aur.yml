@@ -1,15 +1,12 @@
-name: AUR Auto-Bump
-
+# .github/workflows/aur-bump.yml
 on:
   workflow_dispatch:
     inputs:
       debug:
-        description: 'Stop before commit if true'
+        description: 'Any value enables debug mode (skip commit)'
         required: false
-        default: ''
   schedule:
     - cron: '0 6 * * *'
-
 
 jobs:
   aur-bump:
@@ -18,29 +15,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Verify Docker availability
-        run: docker --version
-
-      - name: Setup SSH key for AUR push
+      - name: Setup SSH key for AUR
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.AUR_SSH_PRIVATE_KEY }}" > ~/.ssh/aur
           chmod 600 ~/.ssh/aur
           ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
 
+      - name: Clone AUR repo
+        run: git clone ssh://aur@aur.archlinux.org/codeql.git codeql
+
       - name: Run bumpversion
         run: make bumpversion
 
-      - name: Regenerate SRCINFO
-        run: make update
-
-      - name: Build & test in Arch container
+      - name: Run update and build inside Docker
         run: make docker-build
-
-      - name: Git config
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
 
       - name: Show diff if debug mode
         if: ${{ github.event.inputs.debug }}
@@ -49,18 +38,14 @@ jobs:
           git add PKGBUILD .SRCINFO
           git diff --cached
 
-      - name: Early exit if debug
+      - name: Early exit if debug mode
         if: ${{ github.event.inputs.debug }}
         run: |
-          printf 'Debug mode set ("%s"), skipping commit/push\n' "${{ github.event.inputs.debug }}"
+          echo "Debug mode set ('${{ github.event.inputs.debug }}'), skipping commit/push"
           exit 0
 
-      - name: Commit and push if changes
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            make commit
-          else
-            echo "No changes to commit"
-          fi
+      - name: Commit and push changes if any
+        run: make commit
         env:
           GIT_SSH_COMMAND: 'ssh -i ~/.ssh/aur'
+
