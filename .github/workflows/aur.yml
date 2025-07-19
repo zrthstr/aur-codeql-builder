@@ -22,10 +22,9 @@ jobs:
           chmod 600 ~/.ssh/aur
           ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
 
-      - name: debug ssh
+      - name: Test SSH Key for AUR Git
         run: |
           ssh -T aur@aur.archlinux.org -i ~/.ssh/aur list-repos
-          #ssh -T aur@aur.archlinux.org -v -i ~/.ssh/aur list-repos
 
       - name: Clone AUR repo
         run: git clone ssh://aur@aur.archlinux.org/codeql.git codeql
