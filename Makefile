@@ -11,10 +11,11 @@ docker-build:
 		pacman -U --noconfirm /build/codeql-*.pkg.tar.zst && \
 		codeql version"
 
-commit:
-	ls -lah /home/runner/work/aur-codeql-builder/aur-codeql-builder/codeql/
 
-foo:
+fix-folder-permissions-from-docker:
+	chown $$(id -u):$$(id -g) -R /home/runner/work/aur-codeql-builder/aur-codeql-builder/codeql/
+
+commit:
 	cd codeql && \
 	git add PKGBUILD .SRCINFO && \
 	if [ -n \"$(git status --porcelain)\" ]; then \
