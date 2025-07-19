@@ -2,8 +2,14 @@ name: AUR Auto-Bump
 
 on:
   workflow_dispatch:
+    inputs:
+      debug:
+        description: 'Stop before commit if true'
+        required: false
+        default: 'false'
   schedule:
     - cron: '0 6 * * *'
+
 
 jobs:
   aur-bump:
@@ -20,6 +26,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.AUR_SSH_PRIVATE_KEY }}" > ~/.ssh/aur
           chmod 600 ~/.ssh/aur
+          ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
 
       - name: Run bumpversion
         run: make bumpversion
@@ -35,6 +42,19 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
+      - name: Show diff if debug mode
+        if: ${{ github.event.inputs.debug }}
+        run: |
+          cd codeql
+          git add PKGBUILD .SRCINFO
+          git diff --cached
+
+      - name: Early exit if debug
+        if: ${{ github.event.inputs.debug }}
+        run: |
+          echo "Debug mode set (${ { github.event.inputs.debug }}), skipping commit/push"
+          exit 0
+
       - name: Commit and push if changes
         run: |
           if [ -n "$(git status --porcelain)" ]; then
@@ -43,5 +63,4 @@ jobs:
             echo "No changes to commit"
           fi
         env:
-          GIT_SSH_COMMAND: 'ssh -i ~/.ssh/aur -o StrictHostKeyChecking=no'
-
+          GIT_SSH_COMMAND: 'ssh -i ~/.ssh/aur'
