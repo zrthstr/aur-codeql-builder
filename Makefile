@@ -4,8 +4,8 @@ bumpversion:
 docker-build:
 	docker run --rm -v "$$PWD/codeql:/build" -w /build archlinux:latest /bin/bash -c "\
 		pacman -Sy --noconfirm base-devel git && \
-		makepkg --printsrcinfo > .SRCINFO && \
-		makepkg -si --noconfirm"
+		chown -R nobody:nobody /build && \
+		su nobody -s /bin/bash -c 'cd /build && makepkg --printsrcinfo > .SRCINFO && makepkg -si --noconfirm'"
 
 commit:
 	cd codeql && \
@@ -16,4 +16,3 @@ commit:
 	else \
 	  echo \"No changes to commit\"; \
 	fi
-
