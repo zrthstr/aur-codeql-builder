@@ -13,7 +13,7 @@ docker-build:
 
 
 fix-folder-permissions-from-docker:
-	chown $$(id -u):$$(id -g) -R /home/runner/work/aur-codeql-builder/aur-codeql-builder/codeql/
+	UID=$$(id -u) GID=$$(id -g) sudo chown $$UID:$$GID -R /home/runner/work/aur-codeql-builder/aur-codeql-builder/codeql/
 
 commit:
 	cd codeql && \
