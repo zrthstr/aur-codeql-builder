@@ -5,6 +5,8 @@ docker-build:
 	docker run --rm -v "$$PWD/codeql:/build" -w /build archlinux:latest /bin/bash -c "\
 		pacman -Sy --noconfirm base-devel git && \
 		chown -R nobody:nobody /build && \
+		usermod -s /bin/bash nobody && \
+		chage -E -1 nobody && \
 		su nobody -s /bin/bash -c 'cd /build && makepkg --printsrcinfo > .SRCINFO && makepkg -si --noconfirm'"
 
 commit:
