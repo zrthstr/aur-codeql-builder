@@ -7,7 +7,7 @@ docker-build:
 		chown -R nobody:nobody /build && \
 		usermod -s /bin/bash nobody && \
 		chage -E -1 nobody && \
-		su nobody -s /bin/bash -c 'cd /build && makepkg --printsrcinfo > .SRCINFO && makepkg -s --noconfirm'" && \
+		su nobody -s /bin/bash -c 'cd /build && makepkg --printsrcinfo > .SRCINFO && makepkg -s --noconfirm' && \
 		pacman -U --noconfirm /build/codeql-*.pkg.tar.zst"
 
 commit:
