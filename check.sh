@@ -4,6 +4,7 @@ OWNER="github"
 REPO="codeql-cli-binaries"
 PKGLOCATION="codeql/PKGBUILD"
 
+
 ### read info from local PKG file
 LOCALVER=$(grep -ir pkgver= $PKGLOCATION | sed 's/pkgver=//g')
 LOCALCHK=$(sed -nE "s/^sha256sums=\('([a-f0-9]+)'\).*/\1/p" $PKGLOCATION)
@@ -11,10 +12,6 @@ echo "Current version in ./codeql folder is: $LOCALVER with $LOCALCHK"
 
 
 ### read info from remote / gh
-# curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/github/codeql-cli-binaries/releases
-# curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$OWNER/$REPO/releases | jq '.[] | .tag_name' | sort -n 
-# curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/github/codeql-cli-binaries/releases | jq '.[0] | .assets[] | select(.name | test("linux64.zip")) | {name, browser_download_url}'
-
 chk=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/github/codeql-cli-binaries/releases | jq -r '.[0] | .assets[] | select(.name | test("linux64.zip.checksum.txt")) | .browser_download_url')
 
 # https://github.com/github/codeql-cli-binaries/releases/download/v2.18.3/codeql-linux64.zip.checksum.txt
@@ -25,7 +22,6 @@ else
     exit 1
 fi
 
-#NEWEST=$(echo $chk | sed -E 's/.*\/(v[0-9]+\.[0-9]+\.[0-9]+)\/.*/\1/' )
 NEWESTVER=$(echo $chk | sed -E  's/.*\/v([0-9]+\.[0-9]+\.[0-9]+)\/.*/\1/' )
 NEWESTCHK=$(curl https://github.com/${OWNER}/${REPO}/releases/download/v${NEWESTVER}/codeql-linux64.zip.checksum.txt -L | awk '{print $1}')
 if [[ "$NEWESTCHK" =~ ^[0-9a-fA-F]{64}$ ]]; then
@@ -50,8 +46,4 @@ else
 	sed -i "s/${LOCALCHK}/${NEWESTCHK}/" $PKGLOCATION
   echo done ...
 fi
-
-#echo $chk
-#exit
-#curl -L "${chk}"
 
