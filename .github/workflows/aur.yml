@@ -6,7 +6,7 @@ on:
       debug:
         description: 'Stop before commit if true'
         required: false
-        default: 'false'
+        default: ''
   schedule:
     - cron: '0 6 * * *'
 
@@ -52,7 +52,7 @@ jobs:
       - name: Early exit if debug
         if: ${{ github.event.inputs.debug }}
         run: |
-          echo "Debug mode set (${ { github.event.inputs.debug }}), skipping commit/push"
+          printf 'Debug mode set ("%s"), skipping commit/push\n' "${{ github.event.inputs.debug }}"
           exit 0
 
       - name: Commit and push if changes
