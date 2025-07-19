@@ -37,7 +37,7 @@ jobs:
       - name: Run update and build inside Docker
         run: make docker-build
 
-      - name: fix folder permissions for buildfolder for from after docker run
+      - name: Reset folder permissions of buildfolder after docker run
         run: make fix-folder-permissions-from-docker
 
       - name: Show diff if debug mode
@@ -47,11 +47,12 @@ jobs:
           git diff --cached
 
       - name: Early exit if debug mode
-        if: ${{ !github.event.inputs.debug }}
+        if: ${{ github.event.inputs.debug }}
         run: |
           echo "Debug mode set ('${{ github.event.inputs.debug }}'), skipping commit/push"
 
       - name: Commit and push changes if any
+        if: ${{ !github.event.inputs.debug }}
         run: make commit
         env:
           GIT_SSH_COMMAND: 'ssh -i ~/.ssh/aur'
