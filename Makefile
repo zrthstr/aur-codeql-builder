@@ -17,7 +17,7 @@ fix-folder-permissions-from-docker:
 commit:
 	cd codeql && \
 	git add PKGBUILD .SRCINFO && \
-	if [ -n "$(git status --porcelain)" ]; then \
+	if [ -n "$$(git status --porcelain)" ]; then \
 	  git commit -m "Version bump" && \
 	  git push; \
 	else \
