@@ -54,8 +54,8 @@ jobs:
       - name: Commit and push changes if any
         if: ${{ !github.event.inputs.debug }}
         run: |
-          git config --global user.email "aur@gh"
-          git config --global user.name "aur"
+          git config --global user.email "zrthstr@gh"
+          git config --global user.name "zrthstr"
           make commit
         env:
           GIT_SSH_COMMAND: 'ssh -i ~/.ssh/aur'

@@ -12,7 +12,10 @@ echo "Current version in ./codeql folder is: $LOCALVER with $LOCALCHK"
 
 
 ### read info from remote / gh
-chk=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/github/codeql-cli-binaries/releases | jq -r '.[0] | .assets[] | select(.name | test("linux64.zip.checksum.txt")) | .browser_download_url')
+# chk=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/github/codeql-cli-binaries/releases | jq -r '.[0] | .assets[] | select(.name | test("linux64.zip.checksum.txt")) | .browser_download_url')
+resp=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/github/codeql-cli-binaries/releases/latest)
+chk=$(jq -r '.assets[] | select(.name | test("linux64.zip.checksum.txt")) | .browser_download_url' <<< "$resp")
+
 
 # https://github.com/github/codeql-cli-binaries/releases/download/v2.18.3/codeql-linux64.zip.checksum.txt
 if [[ "$chk" =~ ^https://[a-zA-Z0-9._/-]+\.checksum\.txt$ ]]; then
